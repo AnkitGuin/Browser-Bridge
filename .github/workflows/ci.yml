@@ -1,0 +1,46 @@
+name: BrowserBridge checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    services:
+      postgres:
+        image: postgres:17.6-bookworm
+        env:
+          POSTGRES_USER: browserbridge
+          POSTGRES_PASSWORD: browserbridge-local
+          POSTGRES_DB: browserbridge
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 2s --health-timeout 3s --health-retries 25
+      redis:
+        image: redis:8.2.3-alpine
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 2s --health-timeout 3s --health-retries 25
+    env:
+      DATABASE_URL: postgresql+psycopg://browserbridge:browserbridge-local@127.0.0.1:5432/browserbridge
+      REDIS_URL: redis://127.0.0.1:6379/0
+      REQUIRE_BROWSER: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: console/package-lock.json
+      - run: pip install --require-hashes -r requirements.lock
+      - run: npm --prefix console ci && npm --prefix console run build
+      - run: npm --prefix console audit --audit-level=high
+      - run: pip install pip-audit==2.10.0 && pip-audit --require-hashes -r requirements.lock
+      - run: ruff check bridge benchmarks migrations scripts tests
+      - run: ruff format --check bridge benchmarks migrations scripts tests
+      - run: python -m playwright install --with-deps chromium --only-shell
+      - run: python -m alembic upgrade head && python -m alembic check
+      - run: python -m pytest -q

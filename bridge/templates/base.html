@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} · BrowserBridge</title><link rel="stylesheet" href="/assets/portal.css">
+  <script defer src="/assets/portal.js"></script>
+</head>
+<body class="theme-{{ app|default('support') }}">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top"><a class="logo" href="/"><span class="mark">B</span> BrowserBridge</a>
+    {% if actor and not actor.run_id %}<span class="who">{{ actor.name }} · {{ actor.role }}</span>{% endif %}
+  </header>
+  {% if actor %}
+  <nav class="portal-nav" aria-label="Applications">
+    {% set names = [('support','Support desk'),('crm','Customer directory'),('inventory','Inventory')] %}
+    {% for key, label in (names|reverse if layout=='reordered' else names) %}
+      <a href="/{{ key }}" {% if key==app %}aria-current="page"{% endif %}>{{ label }}</a>
+    {% endfor %}
+    {% if not actor.run_id %}<a href="/">Operator console</a>{% endif %}
+  </nav>
+  {% endif %}
+  <main id="main">
+    {% if request.query_params.get('saved') %}<p class="banner" role="status">Changes saved</p>{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<a class="back" href="/crm/customers">Customer directory</a>
+<h1>{{ item.company }}</h1><p class="muted">{{ item.external_ref }}</p>
+<div class="columns">
+<section class="box">
+<h2>Account profile</h2>
+<dl data-resource="customer">
+{% for key,label,val in [('external_ref','Reference',item.external_ref),('company','Company',item.company),('tier','Tier',item.tier),('risk','Risk','Flagged' if item.risk else 'Normal'),('status','Status',item.status)] %}
+<dt>{{ label }}</dt><dd data-field="{{ key }}">{{ val }}</dd>
+{% endfor %}
+</dl>
+</section>
+<section class="box">
+<h2>Contacts and notes</h2>
+{% if not actor.run_id %}
+  <p data-private>{{ item.contact or 'No contact on file' }}</p>
+  <p data-private>{{ item.email or 'No email on file' }}</p>
+  <p data-private>{{ item.note }}</p>
+  {% if actor.role=='manager' %}
+  <form method="post"><input type="hidden" name="version" value="{{ item.version }}">
+  <label>Account status <select name="status">{% for val in ['active','inactive','on_hold'] %}<option {% if val==item.status %}selected{% endif %}>{{ val }}</option>{% endfor %}</select></label>
+  <label>Account note <textarea name="note" maxlength="2000">{{ item.note }}</textarea></label>
+  <button>Save profile</button></form>
+  {% endif %}
+{% else %}<p>Contact information is restricted in browser runs.</p>{% endif %}
+</section>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<a class="back" href="/support/tickets">All tickets</a>
+<h1>{{ item.title }}</h1><p class="muted">{{ item.number }}</p>
+<div class="columns">
+<section class="box">
+<h2>Ticket details</h2>
+<dl data-resource="ticket">
+  <dt>Number</dt><dd data-field="number">{{ item.number }}</dd>
+  <dt>Queue</dt><dd data-field="queue">{{ item.queue }}</dd>
+  <dt>Status</dt><dd data-field="status">{{ item.status }}</dd>
+  <dt>Priority</dt><dd data-field="priority">{{ item.priority }}</dd>
+  <dt>Team</dt><dd data-field="team">{{ team.name }}</dd>
+  <dt>Revision</dt><dd data-field="version">{{ item.version }}</dd>
+  <dt>Created</dt><dd data-field="created_at">{{ item.created_at|iso }}</dd>
+  <dt>CRM account</dt><dd data-field="customer">{% if customer %}<a href="/crm/customers/{{ customer.id }}">{{ customer.external_ref }}</a>{% else %}No linked account{% endif %}</dd>
+</dl>
+<p data-untrusted>{{ item.description }}</p>
+{% if actor.role in ['operator','manager'] and item.queue!='escalation' %}
+  {% set label='Send to escalation queue' if layout in ['renamed','reordered'] else 'Escalate ticket' %}
+  {% if layout=='modal' %}
+  <button type="button" data-open-dialog="confirm">Review escalation</button>
+  <dialog id="confirm" aria-labelledby="confirm-title"><h2 id="confirm-title">Confirm escalation</h2><p>Move {{ item.number }} to the escalation queue?</p>
+  {% endif %}
+  <form method="post" data-operation="escalate">
+    <input type="hidden" name="operation" value="escalate">
+    <input type="hidden" name="version" value="{{ item.version }}">
+    <input type="hidden" name="intent" value="">
+    {% if layout=='masked' %}<button type="submit" aria-label="Apply change">Send to escalation queue</button>
+    {% else %}<button type="submit">{{ label }}</button>{% endif %}
+  </form>
+  {% if layout=='modal' %}<button type="button" data-close-dialog="confirm" class="secondary">Go back</button></dialog>{% endif %}
+{% endif %}
+</section>
+<section class="box">
+<h2>Activity</h2>
+{% for event in history %}<p {% if actor.run_id and event.intent_id %}data-effect="{{ event.intent_id }}"{% endif %}>{{ event.operation|title }} · <time>{{ event.created_at|iso }}</time></p>
+{% else %}<p class="muted">No changes yet.</p>{% endfor %}
+{% if not actor.run_id %}
+{% for note in notes %}<p data-private>{{ note.content }}</p>{% endfor %}
+{% if actor.role in ['operator','manager'] %}
+<form method="post"><input type="hidden" name="operation" value="note"><input type="hidden" name="version" value="{{ item.version }}">
+<label>Internal note <textarea name="content" maxlength="2000" required></textarea></label><button>Add note</button></form>
+<form method="post"><input type="hidden" name="operation" value="status"><input type="hidden" name="version" value="{{ item.version }}">
+<label>Status <select name="status">{% for s in ['open','pending','in_progress','resolved','closed','cancelled'] %}<option {% if item.status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></label><button>Update status</button></form>
+{% endif %}{% endif %}
+</section>
+</div>
+{% endblock %}

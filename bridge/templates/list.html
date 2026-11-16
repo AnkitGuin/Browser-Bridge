@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ title }}</h1>
+<form method="get" class="filters box" role="search">
+  <label>Search <input name="q" value="{{ request.query_params.get('q','') }}" placeholder="{% if app=='support' %}Ticket number or title{% elif app=='crm' %}Account name or reference{% else %}SKU or product name{% endif %}"></label>
+  {% if app=='support' %}
+    {% for name, options in [('priority',['high','normal','low']),('status',['open','pending','in_progress','resolved','closed','cancelled']),('team',['Team A','Team B']),('sort',['newest'])] %}
+      <label>{{ name|title }} <select name="{{ name }}"><option value="">Any</option>{% for val in options %}<option {% if request.query_params.get(name)==val %}selected{% endif %}>{{ val }}</option>{% endfor %}</select></label>
+    {% endfor %}
+    <label>Created before <input name="before" type="date" value="{{ request.query_params.get('before','') }}"></label>
+  {% elif app=='crm' %}
+    <label>Tier <select name="tier"><option value="">Any</option>{% for val in ['Standard','Enterprise','Growth'] %}<option {% if request.query_params.get('tier')==val %}selected{% endif %}>{{ val }}</option>{% endfor %}</select></label>
+  {% endif %}
+  <button type="submit">Search</button>
+</form>
+<section class="box">
+  <p class="muted" role="status">{{ count }} record{% if count!=1 %}s{% endif %} · Page {{ page }}</p>
+  {% if rows %}
+  {% if app=='inventory' %}
+  <div class="catalog">{% for row in rows %}<article class="tile" data-record><a href="/inventory/products/{{ row.id }}">{{ row.sku }}</a><h2>{{ row.name }}</h2><p>Reorder point {{ row.reorder_point }}</p></article>{% endfor %}</div>
+  {% else %}
+  {% if app=='support' %}
+    {% set cols = [('number','Ticket'),('title','Title'),('priority','Priority'),('status','Status'),('team','Team'),('queue','Queue'),('created_at','Created')] %}
+  {% else %}
+    {% set cols = [('external_ref','Reference'),('company','Company'),('tier','Tier'),('status','Status')] %}
+  {% endif %}
+  {% if layout=='reordered' %}{% set cols=cols|reverse|list %}{% endif %}
+  <div class="scroll"><table>
+  <thead><tr>{% for key,label in cols %}<th scope="col">{{ label }}</th>{% endfor %}</tr></thead>
+  <tbody>{% for row in rows %}<tr data-record>
+    {% for key,label in cols %}<td data-field="{{ key }}">
+      {% if key=='number' %}<a href="/support/tickets/{{ row.id }}">{{ row[key] }}</a>
+      {% elif key=='external_ref' %}<a href="/crm/customers/{{ row.id }}">{{ row[key] }}</a>
+      {% elif key=='created_at' %}<time datetime="{{ row[key]|iso }}">{{ row[key]|iso }}</time>
+      {% else %}{{ row[key] }}{% endif %}
+    </td>{% endfor %}
+  </tr>{% endfor %}</tbody>
+  </table></div>
+  {% endif %}
+  {% else %}<p>No matching records.</p>{% endif %}
+  <nav class="pager" aria-label="Pagination">
+    {% if previous %}<a rel="prev" href="{{ previous }}">Previous page</a>{% endif %}
+    {% if next %}<a rel="next" href="{{ next }}">{{ "More records" if layout=="renamed" else "Next page" }}</a>{% endif %}
+  </nav>
+</section>
+{% endblock %}

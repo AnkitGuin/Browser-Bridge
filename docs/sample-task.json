@@ -1,0 +1,8 @@
+{
+  "goal": "Escalate unresolved high-priority Team A tickets older than 48 hours. Check each linked CRM customer.",
+  "mode": "hybrid",
+  "apps": ["support", "crm"],
+  "timeout_seconds": 240,
+  "max_actions": 160,
+  "approval_required": false
+}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<a class="back" href="/inventory/products">All products</a>
+<h1>{{ item.name }}</h1><p class="muted">{{ item.sku }}</p>
+<section class="box">
+<h2>Warehouse stock</h2>
+<dl data-resource="product"><dt>SKU</dt><dd data-field="sku">{{ item.sku }}</dd><dt>Reorder point</dt><dd data-field="reorder_point">{{ item.reorder_point }}</dd></dl>
+<div class="scroll"><table>
+<thead><tr><th>Warehouse</th><th>On hand</th><th>Reserved</th><th>Revision</th></tr></thead>
+<tbody>{% for row in levels %}<tr data-warehouse="{{ row.warehouse_id }}"><th scope="row">{{ row.name }}</th><td>{{ row.quantity }}</td><td>{{ row.reserved }}</td><td>{{ row.version }}</td></tr>{% endfor %}</tbody>
+</table></div>
+</section>
+<section class="box">
+<h2>Stock movements</h2>
+{% if actor.role=='manager' %}
+{% if actor.run_id %}
+<form method="post" data-operation="inventory" class="filters">
+  <label>Operation <select name="operation" aria-label="Operation"><option value="transfer">Transfer</option><option value="reorder">Reorder</option></select></label>
+  <label>Source warehouse <select name="source" aria-label="Source warehouse"><option value="">None</option>{% for row in levels %}<option value="{{ row.warehouse_id }}">{{ row.name }}</option>{% endfor %}</select></label>
+  <label>Destination warehouse <select name="target" aria-label="Destination warehouse">{% for row in levels %}<option value="{{ row.warehouse_id }}">{{ row.name }}</option>{% endfor %}</select></label>
+  <label>Quantity <input name="quantity" type="number" min="1" max="10000" required></label>
+  <input name="source_version" type="hidden"><input name="target_version" type="hidden"><input name="intent" type="hidden">
+  <button>Submit stock movement</button>
+</form>
+{% else %}
+<p>Transfers and reorders need a separate manager’s approval.</p>
+<form action="/" method="get" class="filters"><label>Movement objective <input name="goal" required placeholder="Transfer 3 units of {{ item.sku }} from East to West"></label><button>Prepare approval request</button></form>
+{% endif %}
+{% endif %}
+<div class="scroll"><table>
+<thead><tr><th>Operation</th><th>Quantity</th><th>Status</th><th>Time</th></tr></thead>
+<tbody>{% for row in history %}<tr data-movement="{{ row.intent_id }}" data-source="{{ row.source or '' }}" data-target="{{ row.target }}"><td>{{ row.kind }}</td><td>{{ row.quantity }}</td><td>{{ row.status }}</td><td><time>{{ row.created_at|iso }}</time></td></tr>{% endfor %}</tbody>
+</table></div>
+{% if not history %}<p class="muted">No movement history.</p>{% endif %}
+</section>
+{% endblock %}

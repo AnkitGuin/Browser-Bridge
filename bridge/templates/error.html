@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="box" data-error="{{ code }}">
+<h1>{{ title }}</h1><p>{{ message }}</p>
+{% if code=="AUTH_EXPIRED" %}<a href="/login">Sign in</a>{% else %}<a href="/">Return to console</a>{% endif %}
+</section>
+{% endblock %}

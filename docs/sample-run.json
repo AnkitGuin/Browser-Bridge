@@ -1,0 +1,303 @@
+{
+  "run_id": "2c29bc11e8c5412c9730a4e997890de2",
+  "mode": "hybrid",
+  "status": "COMPLETED",
+  "goal": "Escalate unresolved high-priority Team A tickets older than 48 hours. Check each linked CRM customer.",
+  "task": {
+    "kind": "escalate",
+    "team": "Team A",
+    "priority": "high",
+    "statuses": [
+      "open",
+      "pending",
+      "in_progress"
+    ],
+    "created_before": 1794312178,
+    "reference": null,
+    "source": null,
+    "target": null,
+    "quantity": null,
+    "apps": [
+      "crm",
+      "support"
+    ],
+    "approval_required": false,
+    "max_actions": 160,
+    "model_tokens": 16000,
+    "retries": 2,
+    "success_predicates": [
+      "every eligible ticket considered",
+      "CRM identity confirmed before write",
+      "fresh UI verifies queue and ticket invariants"
+    ]
+  },
+  "totals": {
+    "considered": 5,
+    "eligible_discovered": 5,
+    "VERIFIED": 5
+  },
+  "outcomes": [
+    {
+      "id": "demo-t1",
+      "path": "/support/tickets/demo-t1",
+      "number": "T-1001",
+      "status": "VERIFIED",
+      "evidence": "4991a95d18c14a8a9b73626e21377a88",
+      "verification": {
+        "tier": "fresh_ui",
+        "predicates": {
+          "effect_id_matches": true,
+          "queue": true,
+          "version": true,
+          "identity_and_invariants": true
+        },
+        "evidence_id": "4991a95d18c14a8a9b73626e21377a88"
+      },
+      "customer": {
+        "external_ref": "CRM-101",
+        "company": "Acme Robotics",
+        "tier": "Enterprise",
+        "risk": "Normal",
+        "status": "active",
+        "id": "demo-c1"
+      },
+      "prior_queue": "inbox",
+      "new_queue": "escalation",
+      "intent_id": "2fa8bf67aebdbf9b89689d08030638e8c8abe2ace905616887e7d5e2887568c5"
+    },
+    {
+      "id": "demo-t2",
+      "path": "/support/tickets/demo-t2",
+      "number": "T-1002",
+      "status": "VERIFIED",
+      "evidence": "5d5daede8dce4f3992bf577df5b44ebf",
+      "verification": {
+        "tier": "fresh_ui",
+        "predicates": {
+          "effect_id_matches": true,
+          "queue": true,
+          "version": true,
+          "identity_and_invariants": true
+        },
+        "evidence_id": "5d5daede8dce4f3992bf577df5b44ebf"
+      },
+      "customer": {
+        "external_ref": "CRM-102",
+        "company": "Acme Robotics",
+        "tier": "Growth",
+        "risk": "Flagged",
+        "status": "active",
+        "id": "demo-c2"
+      },
+      "prior_queue": "inbox",
+      "new_queue": "escalation",
+      "intent_id": "397c65eed1b91c66758450cd358dbc74ef4495e9e7ccd497d4c5b25e9fa25050"
+    },
+    {
+      "id": "demo-t3",
+      "path": "/support/tickets/demo-t3",
+      "number": "T-1003",
+      "status": "VERIFIED",
+      "evidence": "7104460386364b0cb4eddf973afbbce0",
+      "verification": {
+        "tier": "fresh_ui",
+        "predicates": {
+          "effect_id_matches": true,
+          "queue": true,
+          "version": true,
+          "identity_and_invariants": true
+        },
+        "evidence_id": "7104460386364b0cb4eddf973afbbce0"
+      },
+      "customer": {
+        "external_ref": "CRM-103",
+        "company": "Pine Systems",
+        "tier": "Standard",
+        "risk": "Normal",
+        "status": "active",
+        "id": "demo-c3"
+      },
+      "prior_queue": "inbox",
+      "new_queue": "escalation",
+      "intent_id": "b63753f041995ca5eee093245dce3f7371e2d233cc57a81353c61c032d4b1b99"
+    },
+    {
+      "id": "demo-t7",
+      "path": "/support/tickets/demo-t7",
+      "number": "T-1007",
+      "status": "VERIFIED",
+      "evidence": "62450361240a484991624e6bfa310b96",
+      "verification": {
+        "tier": "fresh_ui",
+        "predicates": {
+          "effect_id_matches": true,
+          "queue": true,
+          "version": true,
+          "identity_and_invariants": true
+        },
+        "evidence_id": "62450361240a484991624e6bfa310b96"
+      },
+      "customer": {
+        "external_ref": "CRM-102",
+        "company": "Acme Robotics",
+        "tier": "Growth",
+        "risk": "Flagged",
+        "status": "active",
+        "id": "demo-c2"
+      },
+      "prior_queue": "inbox",
+      "new_queue": "escalation",
+      "intent_id": "e30116784b9cd699f62bbe9cec554b34cad800743c98aa37bcea6d7ae691b355"
+    },
+    {
+      "id": "demo-t10",
+      "path": "/support/tickets/demo-t10",
+      "number": "T-1010",
+      "status": "VERIFIED",
+      "evidence": "2303028fc0d44824a1a7f30c1e7b133a",
+      "verification": {
+        "tier": "fresh_ui",
+        "predicates": {
+          "effect_id_matches": true,
+          "queue": true,
+          "version": true,
+          "identity_and_invariants": true
+        },
+        "evidence_id": "2303028fc0d44824a1a7f30c1e7b133a"
+      },
+      "customer": {
+        "external_ref": "CRM-105",
+        "company": "Helix Research",
+        "tier": "Growth",
+        "risk": "Normal",
+        "status": "active",
+        "id": "demo-c5"
+      },
+      "prior_queue": "inbox",
+      "new_queue": "escalation",
+      "intent_id": "83b7d0edbd5a886f789e10f9963b9983024a27094b01f22fb264abb79cfd4e6e"
+    }
+  ],
+  "action_ledger": [
+    {
+      "id": "2fa8bf67aebdbf9b89689d08030638e8c8abe2ace905616887e7d5e2887568c5",
+      "run_id": "2c29bc11e8c5412c9730a4e997890de2",
+      "resource_id": "demo-t1",
+      "operation": "escalate",
+      "parameters": {
+        "queue": "escalation",
+        "version": 1
+      },
+      "status": "COMMITTED_VERIFIED",
+      "verification": {
+        "tier": "fresh_ui",
+        "predicates": {
+          "effect_id_matches": true,
+          "queue": true,
+          "version": true,
+          "identity_and_invariants": true
+        },
+        "evidence_id": "4991a95d18c14a8a9b73626e21377a88"
+      },
+      "created_at": 1794484979,
+      "updated_at": 1794484980
+    },
+    {
+      "id": "397c65eed1b91c66758450cd358dbc74ef4495e9e7ccd497d4c5b25e9fa25050",
+      "run_id": "2c29bc11e8c5412c9730a4e997890de2",
+      "resource_id": "demo-t2",
+      "operation": "escalate",
+      "parameters": {
+        "queue": "escalation",
+        "version": 1
+      },
+      "status": "COMMITTED_VERIFIED",
+      "verification": {
+        "tier": "fresh_ui",
+        "predicates": {
+          "effect_id_matches": true,
+          "queue": true,
+          "version": true,
+          "identity_and_invariants": true
+        },
+        "evidence_id": "5d5daede8dce4f3992bf577df5b44ebf"
+      },
+      "created_at": 1794484980,
+      "updated_at": 1794484980
+    },
+    {
+      "id": "b63753f041995ca5eee093245dce3f7371e2d233cc57a81353c61c032d4b1b99",
+      "run_id": "2c29bc11e8c5412c9730a4e997890de2",
+      "resource_id": "demo-t3",
+      "operation": "escalate",
+      "parameters": {
+        "queue": "escalation",
+        "version": 1
+      },
+      "status": "COMMITTED_VERIFIED",
+      "verification": {
+        "tier": "fresh_ui",
+        "predicates": {
+          "effect_id_matches": true,
+          "queue": true,
+          "version": true,
+          "identity_and_invariants": true
+        },
+        "evidence_id": "7104460386364b0cb4eddf973afbbce0"
+      },
+      "created_at": 1794484981,
+      "updated_at": 1794484981
+    },
+    {
+      "id": "e30116784b9cd699f62bbe9cec554b34cad800743c98aa37bcea6d7ae691b355",
+      "run_id": "2c29bc11e8c5412c9730a4e997890de2",
+      "resource_id": "demo-t7",
+      "operation": "escalate",
+      "parameters": {
+        "queue": "escalation",
+        "version": 1
+      },
+      "status": "COMMITTED_VERIFIED",
+      "verification": {
+        "tier": "fresh_ui",
+        "predicates": {
+          "effect_id_matches": true,
+          "queue": true,
+          "version": true,
+          "identity_and_invariants": true
+        },
+        "evidence_id": "62450361240a484991624e6bfa310b96"
+      },
+      "created_at": 1794484981,
+      "updated_at": 1794484982
+    },
+    {
+      "id": "83b7d0edbd5a886f789e10f9963b9983024a27094b01f22fb264abb79cfd4e6e",
+      "run_id": "2c29bc11e8c5412c9730a4e997890de2",
+      "resource_id": "demo-t10",
+      "operation": "escalate",
+      "parameters": {
+        "queue": "escalation",
+        "version": 1
+      },
+      "status": "COMMITTED_VERIFIED",
+      "verification": {
+        "tier": "fresh_ui",
+        "predicates": {
+          "effect_id_matches": true,
+          "queue": true,
+          "version": true,
+          "identity_and_invariants": true
+        },
+        "evidence_id": "2303028fc0d44824a1a7f30c1e7b133a"
+      },
+      "created_at": 1794484982,
+      "updated_at": 1794484982
+    }
+  ],
+  "browser_actions": 29,
+  "blocked_requests": 0,
+  "model_tokens": 0,
+  "model_latency_ms": 0,
+  "stop_reason": null
+}

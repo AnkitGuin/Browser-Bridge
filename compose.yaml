@@ -1,0 +1,69 @@
+name: browserbridge
+x-app: &app
+  build: .
+  image: browserbridge:local
+  env_file:
+    - path: .env
+      required: false
+  environment:
+    DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://browserbridge:browserbridge-local@postgres:5432/browserbridge}
+    REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+    BROWSER_URL: ${BROWSER_URL:-http://app:8000}
+    ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:8000,http://127.0.0.1:8000,http://app:8000}
+
+services:
+  postgres:
+    image: postgres:17.6-bookworm
+    environment:
+      POSTGRES_USER: browserbridge
+      POSTGRES_PASSWORD: browserbridge-local
+      POSTGRES_DB: browserbridge
+    volumes:
+      - pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U browserbridge -d browserbridge"]
+      interval: 2s
+      timeout: 3s
+      retries: 25
+  redis:
+    image: redis:8.2.3-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - queue:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 25
+  migrate:
+    <<: *app
+    command: ["sh", "-c", "python -m alembic upgrade head && python -m bridge.seed"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+  app:
+    <<: *app
+    ports:
+      - "127.0.0.1:${PUBLIC_PORT:-8000}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/health/ready',timeout=2)"]
+      interval: 3s
+      timeout: 4s
+      retries: 15
+  worker:
+    <<: *app
+    command: ["python", "-m", "bridge.worker"]
+    restart: unless-stopped
+    init: true
+    shm_size: "256m"
+    depends_on:
+      app:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+volumes:
+  pg:
+  queue:
